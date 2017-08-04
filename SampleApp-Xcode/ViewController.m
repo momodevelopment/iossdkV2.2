@@ -278,7 +278,7 @@
                                         @"4234234234234234",@"transid",
                                         nil];
     [[MoMoPayment shareInstant] setMoMoAppScheme:@"com.momo.appv2.ios"];//Development schema com.momo.appv2.ios , Production scheme com.mservice.com.vn.MoMoTransfer
-    [[MoMoPayment shareInstant] setSubmitURL:@"http://10.10.10.171:8080/sdk/api/v1/payment/request"];
+    [[MoMoPayment shareInstant] setSubmitURL:@"http://118.69.187.119:9090/sdk/api/v1/payment/request"];
     [[MoMoPayment shareInstant] createPaymentInformation:paymentinfo];
     
     //Buoc 2: add button Thanh toan bang Vi MoMo vao khu vuc ban can hien thi (Vi du o day la vung paymentArea)
