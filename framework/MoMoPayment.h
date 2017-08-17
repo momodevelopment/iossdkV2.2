@@ -4,14 +4,21 @@
 //
 //  Created by Luu Lanh on 9/30/15.
 //  Copyright (c) 2015 LuuLanh. All rights reserved.
+//  Last updated: 08/17/2017
 //
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+
+typedef enum {
+    MOMO_SDK_DEVELOPMENT,
+    MOMO_SDK_PRODUCTION,
+    MOMO_SDK_DEBUG,
+} MOMO_ENVIRONTMENT ;
+
 @interface MoMoPayment : NSObject
 +(MoMoPayment*)shareInstant;
 - (void)initializingAppBundleId:(NSString*)bundleid merchantId:(NSString*)merchantId merchantName:(NSString*)merchantname merchantNameTitle:(NSString*)merchantNameTitle billTitle:(NSString*)billTitle;
--(void)requestPayment:(NSMutableDictionary*)parram;
 -(void)requestToken;
 -(void)handleOpenUrl:(NSURL*)url;
 -(void)createPaymentInformation:(NSMutableDictionary*)info;
@@ -29,7 +36,7 @@
 -(void)requestWebpaymentData:(NSMutableDictionary*)dataPost requestType:(NSString*)requesttype;
 -(NSString*)getDeviceInfoString;
 -(void)setMoMoAppScheme:(NSString*)bundleId;
--(void)initPaymentInformation:(NSMutableDictionary*)info submitUrl:(NSString*)submitUrl momoAppScheme:(NSString*)bundleId;
--(void)setEnvironment:(BOOL)isproduct;
+-(void)initPaymentInformation:(NSMutableDictionary*)info submitUrl:(NSString*)submitUrl momoAppScheme:(NSString*)bundleId environment:(MOMO_ENVIRONTMENT)type_environment;
+-(void)setEnvironment:(MOMO_ENVIRONTMENT)type_environtment;
 -(BOOL)getEnvironment;
 @end

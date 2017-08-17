@@ -4,6 +4,7 @@
 //
 //  Created by Luu Lanh on 9/30/15.
 //  Copyright (c) 2015 LuuLanh. All rights reserved.
+//  Last updated: 08/17/2017
 //
 
 #import "MoMoPayment.h"
@@ -84,42 +85,6 @@ static NSMutableDictionary *paymentInfo = nil;
     
 }
 */
--(void)requestPayment:(NSMutableDictionary*)parram{
-
-//    NSString *requestBody = [NSString stringWithFormat:@"{\"data\":\"%@\",\"hash\":\"%@\",\"ipaddress\":\"%@\",\"merchantcode\":\"%@\",\"phonenumber\":\"%@\"}",[parram objectForKey:@"data"],[parram objectForKey:@"hash"],[parram objectForKey:@"ipaddress"],[MoMoConfig getMerchantcode],[parram objectForKey:@"phonenumber"]];
-    
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:parram options:0 error:nil];
-    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    
-    NSLog(@">>Body payment: %@",jsonString);
-    
-    NSData *postData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];;
-    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
-    [request setURL:[NSURL URLWithString:MOMO_PAYMENT_URL]];
-    [request setHTTPMethod:@"POST"];
-    [request setValue:@"application/json" forHTTPHeaderField:@"Content-Type"];
-    [request setValue:@"gzip" forHTTPHeaderField:@"Accept-Encoding"];
-    [request setHTTPBody:postData];
-    [request setCachePolicy:NSURLRequestReloadIgnoringLocalCacheData];
-    
-    dispatch_async(dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(void){
-        NSURLResponse *response;
-        NSError *err;
-        NSData *GETReply = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&err];
-        dispatch_async(dispatch_get_main_queue(), ^(void){
-            if (!err) {
-                NSError *errJson;
-                id responseObject = [NSJSONSerialization JSONObjectWithData:GETReply options:0 error:&errJson];
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"NoficationCenterCreateOrderReceived" object:responseObject];
-            }
-            else
-            {
-                [[NSNotificationCenter defaultCenter] postNotificationName:@"NoficationCenterCreateOrderReceived" object:err.description];
-            }
-        });
-    });
-}
-
 -(void)handleOpenUrl:(NSURL*)url
 {
     NSString *sourceURI = [url absoluteString];
@@ -155,6 +120,7 @@ static NSMutableDictionary *paymentInfo = nil;
 
 -(void)createPaymentInformation:(NSMutableDictionary*)info
 {
+    [MoMoConfig setEnvironment:YES];
     paymentInfo = [[NSMutableDictionary alloc] initWithDictionary:info];
 }
 
@@ -400,10 +366,9 @@ static NSMutableDictionary *paymentInfo = nil;
         }
         
         NSString *appSource = [NSString stringWithFormat:@"%@://?%@",[MOMO_APP_BUNDLE_ID lowercaseString],inputParams];
-        
-        NSString *momoappScheme = [MoMoConfig getMoMoAppScheme];
-        if (momoappScheme) {
-            appSource = [NSString stringWithFormat:@"%@://?%@",momoappScheme,inputParams];
+        BOOL isProduction = [MoMoConfig getEnvironment];
+        if (!isProduction) {
+            appSource = [NSString stringWithFormat:@"%@://?%@",[MoMoConfig getMoMoAppScheme],inputParams];
         }
         
         appSource = [appSource stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
@@ -438,15 +403,22 @@ static NSMutableDictionary *paymentInfo = nil;
 -(NSString*)getMoMoAppScheme{
     return [MoMoConfig getMoMoAppScheme];
 }
--(void)initPaymentInformation:(NSMutableDictionary*)info submitUrl:(NSString*)submitUrl momoAppScheme:(NSString*)bundleId
+
+-(void)initPaymentInformation:(NSMutableDictionary*)info submitUrl:(NSString*)submitUrl momoAppScheme:(NSString*)bundleId environment:(MOMO_ENVIRONTMENT)type_environment
 {
     [MoMoConfig setMoMoAppScheme:bundleId];
     [MoMoConfig setSubmitUrl:submitUrl];
     paymentInfo = [[NSMutableDictionary alloc] initWithDictionary:info];
+    [self setEnvironment:type_environment];
     
 }
--(void)setEnvironment:(BOOL)isproduct{
-    [MoMoConfig setEnvironment:isproduct];
+-(void)setEnvironment:(MOMO_ENVIRONTMENT)type_environtment{
+    if (type_environtment == MOMO_SDK_DEVELOPMENT || type_environtment == MOMO_SDK_DEBUG) {
+        [MoMoConfig setEnvironment:NO];
+    }
+    else{
+         [MoMoConfig setEnvironment:YES];
+    }
 }
 
 -(BOOL)getEnvironment{
