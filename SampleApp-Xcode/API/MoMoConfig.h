@@ -4,6 +4,7 @@
 //
 //  Created by Luu Lanh on 9/30/15.
 //  Copyright (c) 2015 LuuLanh. All rights reserved.
+//  Last updated: 08/17/2017
 //
 
 #import <Foundation/Foundation.h>
@@ -47,7 +48,7 @@
  Sanbox API http://
  */
 
-#define MOMO_REQUEST_PATH @"apptest2.momo.vn:8091/paygamebill" // @"172.16.43.22:8082/paygamebill" //
+#define MOMO_REQUEST_PATH @"172.16.43.22:8082/paygamebill" //@"apptest2.momo.vn:8091/paygamebill" //
 #define MOMO_PAYMENT_URL [NSString stringWithFormat:@"%@%@",MOMO_HTTP,MOMO_REQUEST_PATH]
 
 //Version 2.2 update
@@ -94,4 +95,7 @@ static NSString *CLIENT_USERNAME;
 +(NSString*)getSubmitUrl;
 +(void)setMoMoAppScheme:(NSString*)bundleId;
 +(NSString*)getMoMoAppScheme;
+
++(void)setEnvironment:(BOOL)isproduct;
++(BOOL)getEnvironment;
 @end

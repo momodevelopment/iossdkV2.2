@@ -86,11 +86,14 @@ static NSMutableDictionary *paymentInfo = nil;
 */
 -(void)requestPayment:(NSMutableDictionary*)parram{
 
-    NSString *requestBody = [NSString stringWithFormat:@"{\"data\":\"%@\",\"hash\":\"%@\",\"ipaddress\":\"%@\",\"merchantcode\":\"%@\",\"phonenumber\":\"%@\"}",[parram objectForKey:@"data"],[parram objectForKey:@"hash"],[parram objectForKey:@"ipaddress"],[MoMoConfig getMerchantcode],[parram objectForKey:@"phonenumber"]];
+//    NSString *requestBody = [NSString stringWithFormat:@"{\"data\":\"%@\",\"hash\":\"%@\",\"ipaddress\":\"%@\",\"merchantcode\":\"%@\",\"phonenumber\":\"%@\"}",[parram objectForKey:@"data"],[parram objectForKey:@"hash"],[parram objectForKey:@"ipaddress"],[MoMoConfig getMerchantcode],[parram objectForKey:@"phonenumber"]];
     
-    NSLog(@">>Body payment: %@",requestBody);
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:parram options:0 error:nil];
+    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     
-    NSData *postData = [requestBody dataUsingEncoding:NSUTF8StringEncoding];;
+    NSLog(@">>Body payment: %@",jsonString);
+    
+    NSData *postData = [jsonString dataUsingEncoding:NSUTF8StringEncoding];;
     NSMutableURLRequest *request = [[NSMutableURLRequest alloc] init];
     [request setURL:[NSURL URLWithString:MOMO_PAYMENT_URL]];
     [request setHTTPMethod:@"POST"];
@@ -159,7 +162,7 @@ static NSMutableDictionary *paymentInfo = nil;
 {
     [paymentInfo setValue:[NSNumber numberWithLongLong:amt] forKey:MOMO_PAY_CLIENT_AMOUNT_TRANSFER];
 }
-
+/*
 -(NSDictionary*)dictionaryFromUrlParram:(NSString*)urlPararm
 {
     
@@ -190,8 +193,63 @@ static NSMutableDictionary *paymentInfo = nil;
         }
     }
     return params;
+}*/
+- (NSString*) stringForCStr:(const char *) cstr{
+    if(cstr){
+        return [NSString stringWithCString: cstr encoding: NSUTF8StringEncoding];
+    }
+    return @"";
 }
-
+-(NSMutableDictionary*)dictionaryFromUrlParram:(NSString*)urlPararm{
+    NSArray *components;
+    NSURL *_tempUrl = [NSURL URLWithString:urlPararm];
+    NSLog(@"sourceUrl >> %@",urlPararm);
+    if ([_tempUrl isKindOfClass:[NSURL class]]) {
+        components = [_tempUrl.query componentsSeparatedByString:@"&"];
+    }
+    else{
+        NSString *parramString = urlPararm;
+        NSArray *_arraySchemeRemoved = [urlPararm componentsSeparatedByString:@"?"];
+        if (_arraySchemeRemoved.count>1) {
+            parramString = [_arraySchemeRemoved objectAtIndex:1];
+        }
+        components = [parramString componentsSeparatedByString:@"&"];
+    }
+    
+    NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
+    // parse parameters to dictionary
+    for (NSString *param in components) {
+        NSArray *elts = [param componentsSeparatedByString:@"="];
+        if([elts count] < 2) continue;
+        // get key, value
+        NSString* key   = [elts objectAtIndex:0];
+        key = [key stringByReplacingOccurrencesOfString:@"?" withString:@""];
+        NSString* value = [elts objectAtIndex:1];
+        
+        ///Start Fix HTML Property issue
+        if ([elts count]>2) {
+            @try {
+                value = [param substringFromIndex:([param rangeOfString:@"="].location+1)];
+            }
+            @catch (NSException *exception) {
+                
+            }
+            @finally {
+                
+            }
+        }
+        ///End HTML Property issue
+        if(value){
+            value = [self stringForCStr:[value UTF8String]];
+        }
+        
+        //
+        if(key.length && value.length){
+            [params setObject:value forKey:key];
+        }
+    }
+    return params;
+}
 -(UIButton*)addMoMoPayCustomButton:(UIButton*)button forControlEvents:(UIControlEvents)controlEvents toView:(UIView*)parrentView
 {
     if (controlEvents) {
@@ -327,12 +385,14 @@ static NSMutableDictionary *paymentInfo = nil;
         if (paymentInfo[@"action"]) {
             inputParams = [NSString stringWithFormat:@"action=%@&partner=merchant&campaign=register",paymentInfo[@"action"]];
         }
-        
+        [paymentInfo setValue:[MoMoConfig getMerchantcode]          forKey:MOMO_PAY_CLIENT_MERCHANT_CODE_KEY];
+        [paymentInfo setValue:[MoMoConfig getMerchantname]       forKey:MOMO_PAY_CLIENT_MERCHANT_NAME_KEY];
+        [paymentInfo setValue:[MoMoConfig getMerchantnameLabel]  forKey:MOMO_PAY_CLIENT_MERCHANT_NAME_LABEL_KEY];
         [paymentInfo setValue:@""          forKey:MOMO_PAY_CLIENT_PUBLIC_KEY_KEY];
         [paymentInfo setValue:[MoMoConfig getIPAddress]          forKey:MOMO_PAY_CLIENT_IP_ADDRESS_KEY];
         [paymentInfo setValue:[self getDeviceInfoString]   forKey:MOMO_PAY_CLIENT_OS_KEY];
-        [paymentInfo setValue:MOMO_PAY_SDK_VERSION               forKey:MOMO_PAY_SDK_VERSION_KEY];
         [paymentInfo setValue:[MoMoConfig getAppBundleId]        forKey:MOMO_PAY_CLIENT_APP_SOURCE_KEY];
+        [paymentInfo setValue:MOMO_PAY_SDK_VERSION               forKey:MOMO_PAY_SDK_VERSION_KEY];
         for (NSString *key in [paymentInfo allKeys]) {
             if ([paymentInfo objectForKey:key] != nil) {
                 inputParams = [inputParams stringByAppendingFormat:@"&%@=%@",key,[paymentInfo objectForKey:key]];
@@ -377,6 +437,20 @@ static NSMutableDictionary *paymentInfo = nil;
 }
 -(NSString*)getMoMoAppScheme{
     return [MoMoConfig getMoMoAppScheme];
+}
+-(void)initPaymentInformation:(NSMutableDictionary*)info submitUrl:(NSString*)submitUrl momoAppScheme:(NSString*)bundleId
+{
+    [MoMoConfig setMoMoAppScheme:bundleId];
+    [MoMoConfig setSubmitUrl:submitUrl];
+    paymentInfo = [[NSMutableDictionary alloc] initWithDictionary:info];
+    
+}
+-(void)setEnvironment:(BOOL)isproduct{
+    [MoMoConfig setEnvironment:isproduct];
+}
+
+-(BOOL)getEnvironment{
+    return [MoMoConfig getEnvironment];
 }
 /*
  //End SDK v.2.2

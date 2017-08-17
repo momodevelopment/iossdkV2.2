@@ -29,4 +29,7 @@
 -(void)requestWebpaymentData:(NSMutableDictionary*)dataPost requestType:(NSString*)requesttype;
 -(NSString*)getDeviceInfoString;
 -(void)setMoMoAppScheme:(NSString*)bundleId;
+-(void)initPaymentInformation:(NSMutableDictionary*)info submitUrl:(NSString*)submitUrl momoAppScheme:(NSString*)bundleId;
+-(void)setEnvironment:(BOOL)isproduct;
+-(BOOL)getEnvironment;
 @end

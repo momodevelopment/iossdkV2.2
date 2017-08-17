@@ -214,5 +214,15 @@
 {
     return [[NSUserDefaults standardUserDefaults] objectForKey:MOMO_APP_SCHEME_BUNDLE_ID_KEY];
 }
+
++(void)setEnvironment:(BOOL)isproduct{
+    [[NSUserDefaults standardUserDefaults] setBool:isproduct forKey:@"MOMO_SDK_ENVIRONTMENT"];
+}
+
++(BOOL)getEnvironment{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"MOMO_SDK_ENVIRONTMENT"];
+}
+
+
 #define stringIndexOf(fulltext, textcompare) ([fulltext rangeOfString: textcompare ].location != NSNotFound)
 @end

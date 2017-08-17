@@ -101,11 +101,11 @@ NSError *error);
     
     
     
-    UIView *labelView = [[UIView alloc] initWithFrame:CGRectMake(0, 15, self.view.frame.size.width - 20, 35)];
+    UIView *labelView = [[UIView alloc] initWithFrame:CGRectMake(0, 15, self.view.frame.size.width - 20, 30)];
     labelView.tag = 2;
     labelView.backgroundColor = [UIColor clearColor];
     
-    lbl_url = [[UILabel alloc] initWithFrame:CGRectMake(10, 20, labelView.frame.size.width-10 , 30)];
+    lbl_url = [[UILabel alloc] initWithFrame:CGRectMake(10, 20, labelView.frame.size.width-10 , 25)];
     lbl_url.text = @"";
     lbl_url.textColor = [UIColor grayColor];
     lbl_url.font = [UIFont systemFontOfSize:16];
@@ -114,11 +114,11 @@ NSError *error);
     [labelView addSubview:lbl_url];
     
     
-    imgF5 = [[UIImageView alloc] initWithFrame:CGRectMake(labelView.frame.size.width-10, 25, 20, 20)];
+    imgF5 = [[UIImageView alloc] initWithFrame:CGRectMake(labelView.frame.size.width-10, 25, 15, 15)];
     [imgF5 setImage:[UIImage imageNamed:@"ic_reload_press"]];
     [labelView addSubview:imgF5];
     
-    btnF5 = [[UIButton alloc] initWithFrame:CGRectMake(labelView.frame.size.width-30, 20, 40, 30)];
+    btnF5 = [[UIButton alloc] initWithFrame:CGRectMake(labelView.frame.size.width-30, 20, 35, 25)];
     btnF5.tag = 3;
     [btnF5 setTitle:@"" forState:UIControlStateNormal];
     [btnF5 setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -140,7 +140,7 @@ NSError *error);
     [btnDimiss addTarget:self action:@selector(dismissDialog) forControlEvents:UIControlEventTouchUpInside];
     [mainView addSubview:btnDimiss];
     
-    UIView *mainWebView = [[UIView alloc] initWithFrame:CGRectMake(0, 80, self.view.frame.size.width, self.view.frame.size.height - 40)];
+    UIView *mainWebView = [[UIView alloc] initWithFrame:CGRectMake(0, 70, self.view.frame.size.width, self.view.frame.size.height - 40)];
     mainWebView.tag = 4;
     mainWebView.backgroundColor = [UIColor whiteColor];
     
@@ -173,6 +173,7 @@ NSError *error);
 -(void)dismissDialog{
     NSMutableDictionary *obj = [[MoMoPayment shareInstant] getPaymentInfo];
     [[MoMoPayment shareInstant] requestWebpaymentData:obj requestType:@"close"];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"NoficationCenterTokenReceived" object:@"payment.momo.vn/callbacksdk?fromapp=momotransfer&phonenumber=&status=4&message=Huỷ yêu cầu thanh toán."];
     [self removeMe];
 }
 -(void)showLoadingActivity{
@@ -291,7 +292,7 @@ NSError *error);
     [self pageLoadFinish];
 }
 - (BOOL) webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
-    //NSLog(@">>load url %@",request.URL.absoluteString);
+    NSLog(@">>load url %@",request.URL.absoluteString);
     lbl_url.text =[NSString stringWithFormat:@"%@://%@",request.URL.scheme,request.URL.host];
     if (request.URL.port.intValue != 80) {
         lbl_url.text =[NSString stringWithFormat:@"%@://%@:%i",request.URL.scheme,request.URL.host,request.URL.port.intValue];

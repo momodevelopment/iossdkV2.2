@@ -4,6 +4,7 @@
 //
 //  Created by Luu Lanh on 9/30/15.
 //  Copyright (c) 2015 LuuLanh. All rights reserved.
+//  Last updated: 08/17/2017
 //
 
 #import "MoMoConfig.h"
@@ -214,5 +215,15 @@
 {
     return [[NSUserDefaults standardUserDefaults] objectForKey:MOMO_APP_SCHEME_BUNDLE_ID_KEY];
 }
+
++(void)setEnvironment:(BOOL)isproduct{
+    [[NSUserDefaults standardUserDefaults] setBool:isproduct forKey:@"MOMO_SDK_ENVIRONTMENT"];
+}
+
++(BOOL)getEnvironment{
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"MOMO_SDK_ENVIRONTMENT"];
+}
+
+
 #define stringIndexOf(fulltext, textcompare) ([fulltext rangeOfString: textcompare ].location != NSNotFound)
 @end

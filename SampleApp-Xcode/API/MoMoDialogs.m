@@ -4,6 +4,7 @@
 //
 //  Created by Luu Lanh on 7/25/17.
 //  Copyright © 2017 LuuLanh. All rights reserved.
+//  Last updated: 08/17/2017
 //
 
 #import "MoMoDialogs.h"
@@ -25,7 +26,8 @@ NSError *error);
 @interface MoMoDialogs(){
     UIView *mainView;
     UIActivityIndicatorView *activity;
-    UIWebView *webview;
+    UIWebView *webview1;
+    UIWebView *webview2;
     UILabel *lbl_url;
     UILabel *lbl_error;
     BOOL pageLoading;
@@ -33,6 +35,8 @@ NSError *error);
     UIButton *btnF5;
     MoMoWebDialogHandler mainhandler;
     UIViewController *parentView;
+    
+    UIButton *btnDimiss;
 }
 
 @end
@@ -101,11 +105,11 @@ NSError *error);
     
     
     
-    UIView *labelView = [[UIView alloc] initWithFrame:CGRectMake(0, 15, self.view.frame.size.width - 20, 35)];
+    UIView *labelView = [[UIView alloc] initWithFrame:CGRectMake(0, 15, self.view.frame.size.width - 20, 25)];
     labelView.tag = 2;
     labelView.backgroundColor = [UIColor clearColor];
     
-    lbl_url = [[UILabel alloc] initWithFrame:CGRectMake(10, 20, labelView.frame.size.width-10 , 30)];
+    lbl_url = [[UILabel alloc] initWithFrame:CGRectMake(10, 20, labelView.frame.size.width-10 , 25)];
     lbl_url.text = @"";
     lbl_url.textColor = [UIColor grayColor];
     lbl_url.font = [UIFont systemFontOfSize:16];
@@ -118,7 +122,7 @@ NSError *error);
     [imgF5 setImage:[UIImage imageNamed:@"ic_reload_press"]];
     [labelView addSubview:imgF5];
     
-    btnF5 = [[UIButton alloc] initWithFrame:CGRectMake(labelView.frame.size.width-30, 20, 40, 30)];
+    btnF5 = [[UIButton alloc] initWithFrame:CGRectMake(labelView.frame.size.width-30, 20, 35, 25)];
     btnF5.tag = 3;
     [btnF5 setTitle:@"" forState:UIControlStateNormal];
     [btnF5 setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
@@ -129,8 +133,8 @@ NSError *error);
     
     [mainView addSubview:labelView];
     
-    UIButton *btnDimiss = [[UIButton alloc] initWithFrame:CGRectMake(5, 27, 45, 45)];
-    btnDimiss.tag = 1;
+    btnDimiss = [[UIButton alloc] initWithFrame:CGRectMake(5, 35, 25, 25)];
+    btnDimiss.tag = 4;
     //    [btnDimiss setTitle:@"Done" forState:UIControlStateNormal];
     [btnDimiss setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [btnDimiss setBackgroundImage:[UIImage imageNamed:@"momoclose"] forState:UIControlStateNormal];
@@ -140,16 +144,26 @@ NSError *error);
     [btnDimiss addTarget:self action:@selector(dismissDialog) forControlEvents:UIControlEventTouchUpInside];
     [mainView addSubview:btnDimiss];
     
-    UIView *mainWebView = [[UIView alloc] initWithFrame:CGRectMake(0, 80, self.view.frame.size.width, self.view.frame.size.height - 40)];
+    UIView *mainWebView = [[UIView alloc] initWithFrame:CGRectMake(0, 70, self.view.frame.size.width, self.view.frame.size.height - 40)];
     mainWebView.tag = 4;
     mainWebView.backgroundColor = [UIColor whiteColor];
     
-    webview = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 70)];
-    webview.tag = 5;
-    webview.delegate = self;
-    [mainWebView addSubview:webview];
+    webview1 = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 70)];
+    webview1.tag = 5;
+    webview1.delegate = self;
+    //webview.scrollView.scrollEnabled = NO;
+    [mainWebView addSubview:webview1];
+    
+    webview2 = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 70)];
+    webview2.hidden = YES;
+    webview2.tag = 6;
+    webview2.delegate = self;
+    webview2.userInteractionEnabled = YES;
+    //webview2.scrollView.scrollEnabled = NO;
+    [mainWebView addSubview:webview2];
     
     lbl_error = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, labelView.frame.size.width-20 , 60)];
+    lbl_error.tag = 7;
     lbl_error.hidden = YES;
     lbl_error.text = @"";
     lbl_error.numberOfLines = 0;
@@ -164,6 +178,7 @@ NSError *error);
     [mainView addSubview:mainWebView];
     
     activity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
+    activity.tag = 8;
     [mainView addSubview:activity];
     activity.center = mainView.center;
     [activity startAnimating];
@@ -171,9 +186,17 @@ NSError *error);
     self.view = mainView;
 }
 -(void)dismissDialog{
-    NSMutableDictionary *obj = [[MoMoPayment shareInstant] getPaymentInfo];
-    [[MoMoPayment shareInstant] requestWebpaymentData:obj requestType:@"close"];
-    [self removeMe];
+    if (webview2.hidden) {
+        NSMutableDictionary *obj = [[MoMoPayment shareInstant] getPaymentInfo];
+        [[MoMoPayment shareInstant] requestWebpaymentData:obj requestType:@"close"];
+        [[NSNotificationCenter defaultCenter] postNotificationName:@"NoficationCenterTokenReceived" object:@"payment.momo.vn/callbacksdk?fromapp=momotransfer&phonenumber=&status=4&message=Huỷ yêu cầu thanh toán."];
+        [self removeMe];
+    }
+    else{
+        //Reload web MoMo Payment
+        [self dimissIBWebview];
+    }
+    
 }
 -(void)showLoadingActivity{
     if(!activity){
@@ -219,22 +242,19 @@ NSError *error);
 }
 
 -(void)refreshWebview{
-    [webview reload];
+    [webview1 reload];
     [self pageLoading];
     
 }
 
 -(void)pageLoading{
-    btnF5.enabled = NO;
     [imgF5 setImage:[UIImage imageNamed:@"momo_ic_reload_press"]];
     [activity startAnimating];
 }
 -(void)pageLoadFinish{
-    btnF5.enabled = YES;
     [imgF5 setImage:[UIImage imageNamed:@"momo_ic_reload"]];
     [activity stopAnimating];
-    if (webview.request.URL.absoluteString == nil || [webview.request.URL.absoluteString isEqualToString:@""]) {
-        btnF5.enabled = NO;
+    if (webview1.request.URL.absoluteString == nil || [webview1.request.URL.absoluteString isEqualToString:@""]) {
         [imgF5 setImage:[UIImage imageNamed:@""]];
     }
 }
@@ -245,7 +265,7 @@ NSError *error);
     }
     return @"";
 }
--(NSMutableDictionary*) getDictionaryFromComponents:(NSArray *)components{
+-(NSDictionary*) getDictionaryFromComponents:(NSArray *)components{
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
     // parse parameters to dictionary
     for (NSString *param in components) {
@@ -285,13 +305,90 @@ NSError *error);
 
 #define stringIndexOfString(fulltext, textcompare) ([fulltext rangeOfString: textcompare ].location != NSNotFound)
 
+///update for Internetbanking
+-(void)loadInternetBanking:(NSString*)baseURI{
+    NSLog(@"loadInternetBanking %@", baseURI);
+    NSArray *arr = [baseURI componentsSeparatedByString:@"?"];
+    NSString *query = [arr objectAtIndex:1];
+    
+    NSArray *components = [query componentsSeparatedByString:@"&"];
+    
+    NSDictionary *params = [self getDictionaryFromComponents:components];
+    if (params[@"bankUrl"] && params[@"bankScript"]) {
+        NSLog(@"Show Webview Mapbank,Hidden web payment");
+        
+        [btnDimiss setBackgroundImage:[UIImage imageNamed:@"momo_back"] forState:UIControlStateNormal];
+        
+        webview1.hidden = YES;
+        
+        webview2.hidden = NO;
+        [webview2 stringByEvaluatingJavaScriptFromString:@"document.body.innerHTML = \"\";"];
+        
+        webview2.accessibilityValue = params[@"bankScript"];
+        NSURLRequest* request = [NSURLRequest requestWithURL: [NSURL URLWithString:params[@"bankUrl"]]
+                                                 cachePolicy: NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                                             timeoutInterval: 60];
+        
+        [webview2 loadRequest: request];
+        
+        //[self performSelector:@selector(invokeStyleSheet) withObject:nil afterDelay:3];
+    }
+}
+
+-(void)invokeStyleSheet{
+    NSString *newStyle = [NSString stringWithFormat:@"var newScript = document.createElement('script');"
+                          "newScript.type = 'text/javascript';"
+                          "newScript.src = '%@';"
+                          "document.body.appendChild(newScript);",webview2.accessibilityValue];
+    NSLog(@">>newStyle %@",newStyle);
+    [webview2 stringByEvaluatingJavaScriptFromString:newStyle];
+}
+
+-(void)showBackButton{
+    btnDimiss.hidden = NO;
+}
+
+-(void)dimissIBWebview{
+    webview1.hidden = NO;
+    webview2.hidden = YES;
+    [btnDimiss setBackgroundImage:[UIImage imageNamed:@"momoclose"] forState:UIControlStateNormal];
+    btnDimiss.hidden = YES;
+    [self performSelector:@selector(showBackButton) withObject:nil afterDelay:3];
+    [self refreshWebview];
+}
+///end update Internetbanking
+
+
 - (void)webViewDidStartLoad:(UIWebView *)webView {
 }
 - (void) webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error{
     [self pageLoadFinish];
 }
 - (BOOL) webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
-    //NSLog(@">>load url %@",request.URL.absoluteString);
+    NSLog(@">>load url %@",request.URL.absoluteString);
+    
+    ///update for IB
+    if ([request.URL.absoluteString hasPrefix:@"itms-apps://"]){
+        return YES;
+    }
+    
+    if (webView.tag == 5) {
+        if (![request.URL.absoluteString hasPrefix:@"https://"] && ![request.URL.absoluteString hasPrefix:@"http://"]) {
+            [self loadInternetBanking:request.URL.absoluteString];
+            return NO;
+        }
+    }else if (webView.tag == 6){
+        if ([request.URL.absoluteString hasPrefix:@"close://"]) {
+            webview1.hidden = NO;
+            webview2.hidden = YES;
+            
+            [self refreshWebview];
+            return NO;
+        }
+    }
+    
+    ///end update IB
+    
     lbl_url.text =[NSString stringWithFormat:@"%@://%@",request.URL.scheme,request.URL.host];
     if (request.URL.port.intValue != 80) {
         lbl_url.text =[NSString stringWithFormat:@"%@://%@:%i",request.URL.scheme,request.URL.host,request.URL.port.intValue];
@@ -300,11 +397,14 @@ NSError *error);
     if (stringIndexOfString(request.URL.absoluteString,@"payment.momo.vn/callbacksdk") || [request.URL.absoluteString hasPrefix:@"https://payment.momo.vn/callbacksdk"]) {
         [[NSNotificationCenter defaultCenter] postNotificationName:@"NoficationCenterTokenReceived" object:request.URL.absoluteString];
     }
-    
+
     return YES;
 }
 -(void) webViewDidFinishLoad:(UIWebView *)webView{
     [self pageLoadFinish];
+    if (webView.tag ==6 ) {
+        [self invokeStyleSheet];
+    }
 }
 
 // ------------ ByPass ssl starts ----------
@@ -344,10 +444,11 @@ NSError *error);
         if ([notif.object objectForKey:@"code"] && [[notif.object objectForKey:@"code"] intValue] ==0 ){
             NSString *url = [notif.object objectForKey:@"url"];
             if (url) {
+                
                 NSURLRequest* request = [NSURLRequest requestWithURL: [NSURL URLWithString:url]
-                                                         cachePolicy: NSURLRequestReloadIgnoringLocalAndRemoteCacheData
-                                                     timeoutInterval: 60];
-                [webview loadRequest: request];
+                                                         cachePolicy: NSURLRequestReloadRevalidatingCacheData
+                                                     timeoutInterval: 60];//IgnoringLocalAndRemoteCacheData NSURLRequestReturnCacheDataElseLoad
+                [webview1 loadRequest: request];
             }
             
         }
@@ -362,7 +463,7 @@ NSError *error);
                 lbl_error.text = @"Service is not available";
             }
             NSLog(@">>error %@",[notif.object objectForKey:@"message"]);
-            webview.hidden = YES;
+            webview1.hidden = YES;
             lbl_error.hidden = NO;
             [self pageLoadFinish ];
         }
@@ -371,7 +472,7 @@ NSError *error);
     else{
         NSLog(@">>error %@",notif.object);
         lbl_error.text = @"Service is not available";
-        webview.hidden = YES;
+        webview1.hidden = YES;
         lbl_error.hidden = NO;
         [self pageLoadFinish ];
     }
