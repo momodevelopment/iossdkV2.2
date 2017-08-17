@@ -160,12 +160,20 @@
         NSString *data = [NSString stringWithFormat:@"%@",[response objectForKey:@"data"]];
         NSString *phoneNumber =  [NSString stringWithFormat:@"%@",[response objectForKey:@"phonenumber"]];
         
-        NSString *environment = @"app";
+        NSString *env = @"app";
         if (response[@"env"]) {
-            environment =  [NSString stringWithFormat:@"%@",[response objectForKey:@"env"]];
+            env =  [NSString stringWithFormat:@"%@",[response objectForKey:@"env"]];
         }
+        
+        if (response[@"extra"] && [sourceText hasPrefix:@"https://payment.momo.vn/callbacksdk"]) {
+            //Decode base 64 for using
+            NSData *decodedData = [[NSData alloc] initWithBase64EncodedString:response[@"extra"] options:0];
+            extra = [[[NSString alloc] initWithData:decodedData encoding:NSUTF8StringEncoding] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        }
+        
         lblMessage.text = [NSString stringWithFormat:@">>response:: SUCESS TOKEN. \n %@",notif.object];
         
+        /*  SEND THESE PARRAM TO SERVER:  phoneNumber, data, env   */
         
     }else
     {
@@ -278,7 +286,7 @@
                                         @"4234234234234234",@"transid",
                                         nil];
     [[MoMoPayment shareInstant] setMoMoAppScheme:@"com.momo.appv2.ios"];//Development schema com.momo.appv2.ios , Production scheme com.mservice.com.vn.MoMoTransfer
-    [[MoMoPayment shareInstant] setSubmitURL:@"http://10.10.10.171:8080/sdk/api/v1/payment/request"];
+    [[MoMoPayment shareInstant] setSubmitURL:@"http://118.69.187.119:9090/sdk/api/v1/payment/request"];
     [[MoMoPayment shareInstant] createPaymentInformation:paymentinfo];
     
     //Buoc 2: add button Thanh toan bang Vi MoMo vao khu vuc ban can hien thi (Vi du o day la vung paymentArea)
