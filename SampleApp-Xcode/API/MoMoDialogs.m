@@ -22,7 +22,7 @@ NSError *error);
 
 #define SCREEN_WIDTH    ([UIScreen mainScreen].bounds.size.width)
 #define SCREEN_HEIGHT    ([UIScreen mainScreen].bounds.size.height)
-
+#define SERVICE_NOT_AVAILABLE @"Service is not available at this time"
 @interface MoMoDialogs(){
     UIView *mainView;
     UIActivityIndicatorView *activity;
@@ -35,25 +35,25 @@ NSError *error);
     UIButton *btnF5;
     MoMoWebDialogHandler mainhandler;
     UIViewController *parentView;
-    
+    NSString *happyStyle;
     UIButton *btnDimiss;
 }
-
-@end
+    
+    @end
 
 @implementation MoMoDialogs
 - (void)viewDidLoad
-{
+    {
+        
+    }
     
-}
-
 -(id)init{
     NSLog(@"MoMoDialogs init");
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(NotificationCenterPresentMoMoWebDialog:) name:@"NotificationCenterPresentMoMoWebDialog" object:nil];
     [self openWebView];
     return self;
 }
-
+    
 -(id)initWithParentView:(id)view{
     if ([parentView isKindOfClass:[UIViewController class]]) {
         parentView = view;
@@ -62,74 +62,70 @@ NSError *error);
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(NotificationCenterPresentMoMoWebDialog:) name:@"NotificationCenterPresentMoMoWebDialog" object:nil];
     return self;
 }
-
+    
 -(UIColor*)colorWithHexString:(NSString*)hex
-{
-    NSString *cString = [[hex stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] uppercaseString];
-    
-    // String should be 6 or 8 characters
-    if ([cString length] < 6) return [UIColor grayColor];
-    
-    // strip 0X if it appears
-    if ([cString hasPrefix:@"0X"]) cString = [cString substringFromIndex:2];
-    
-    if ([cString length] != 6) return  [UIColor grayColor];
-    
-    // Separate into r, g, b substrings
-    NSRange range;
-    range.location = 0;
-    range.length = 2;
-    NSString *rString = [cString substringWithRange:range];
-    
-    range.location = 2;
-    NSString *gString = [cString substringWithRange:range];
-    
-    range.location = 4;
-    NSString *bString = [cString substringWithRange:range];
-    
-    // Scan values
-    unsigned int r, g, b;
-    [[NSScanner scannerWithString:rString] scanHexInt:&r];
-    [[NSScanner scannerWithString:gString] scanHexInt:&g];
-    [[NSScanner scannerWithString:bString] scanHexInt:&b];
-    
-    return [UIColor colorWithRed:((float) r / 255.0f)
-                           green:((float) g / 255.0f)
-                            blue:((float) b / 255.0f)
-                           alpha:1.0f];
-}
+    {
+        NSString *cString = [[hex stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] uppercaseString];
+        
+        // String should be 6 or 8 characters
+        if ([cString length] < 6) return [UIColor grayColor];
+        
+        // strip 0X if it appears
+        if ([cString hasPrefix:@"0X"]) cString = [cString substringFromIndex:2];
+        
+        if ([cString length] != 6) return  [UIColor grayColor];
+        
+        // Separate into r, g, b substrings
+        NSRange range;
+        range.location = 0;
+        range.length = 2;
+        NSString *rString = [cString substringWithRange:range];
+        
+        range.location = 2;
+        NSString *gString = [cString substringWithRange:range];
+        
+        range.location = 4;
+        NSString *bString = [cString substringWithRange:range];
+        
+        // Scan values
+        unsigned int r, g, b;
+        [[NSScanner scannerWithString:rString] scanHexInt:&r];
+        [[NSScanner scannerWithString:gString] scanHexInt:&g];
+        [[NSScanner scannerWithString:bString] scanHexInt:&b];
+        
+        return [UIColor colorWithRed:((float) r / 255.0f)
+                               green:((float) g / 255.0f)
+                                blue:((float) b / 255.0f)
+                               alpha:1.0f];
+    }
 -(void)openWebView{
-    
+    happyStyle = @"";
     mainView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height-70)];
     [mainView setBackgroundColor:[self colorWithHexString:@"325340"]];
-    
-    
     
     UIView *labelView = [[UIView alloc] initWithFrame:CGRectMake(0, 15, self.view.frame.size.width - 20, 25)];
     labelView.tag = 2;
     labelView.backgroundColor = [UIColor clearColor];
     
-    lbl_url = [[UILabel alloc] initWithFrame:CGRectMake(10, 20, labelView.frame.size.width-10 , 25)];
+    lbl_url = [[UILabel alloc] initWithFrame:CGRectMake(40, 20, labelView.frame.size.width-35 , 27)];
     lbl_url.text = @"";
-    lbl_url.textColor = [UIColor grayColor];
+    lbl_url.textColor = [UIColor lightGrayColor];
     lbl_url.font = [UIFont systemFontOfSize:16];
+    lbl_url.layer.cornerRadius = 3;
+    lbl_url.clipsToBounds = YES;
     lbl_url.textAlignment = NSTextAlignmentCenter;
-    [lbl_url setBackgroundColor:[UIColor clearColor]];
+    [lbl_url setBackgroundColor:[self colorWithHexString:@"396049"]];
     [labelView addSubview:lbl_url];
     
     
-    imgF5 = [[UIImageView alloc] initWithFrame:CGRectMake(labelView.frame.size.width-10, 25, 20, 20)];
+    UIImageView *locked = [[UIImageView alloc] initWithFrame:CGRectMake(40, 22, 24, 24)];
+    [locked setImage:[UIImage imageNamed:@"momo_lock_symbol"]];
+    [labelView addSubview:locked];
+    
+    
+    imgF5 = [[UIImageView alloc] initWithFrame:CGRectMake(labelView.frame.size.width-20, 23, 18, 18)];
     [imgF5 setImage:[UIImage imageNamed:@"ic_reload_press"]];
     [labelView addSubview:imgF5];
-    
-    btnF5 = [[UIButton alloc] initWithFrame:CGRectMake(labelView.frame.size.width-30, 20, 35, 25)];
-    btnF5.tag = 3;
-    [btnF5 setTitle:@"" forState:UIControlStateNormal];
-    [btnF5 setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
-    btnF5.titleLabel.font = [UIFont boldSystemFontOfSize:17];
-    [btnF5 setBackgroundColor:[UIColor clearColor]];
-    [btnF5 addTarget:self action:@selector(refreshWebview) forControlEvents:UIControlEventTouchUpInside];
-    [labelView addSubview:btnF5];
     
     [mainView addSubview:labelView];
     
@@ -144,6 +140,14 @@ NSError *error);
     [btnDimiss addTarget:self action:@selector(dismissDialog) forControlEvents:UIControlEventTouchUpInside];
     [mainView addSubview:btnDimiss];
     
+    btnF5 = [[UIButton alloc] initWithFrame:CGRectMake(labelView.frame.size.width-20, 32, 40, 30)];
+    [btnF5 setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [btnF5 setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    btnF5.titleLabel.font = [UIFont boldSystemFontOfSize:18];
+    [btnF5 setBackgroundColor:[UIColor clearColor]];
+    [btnF5 addTarget:self action:@selector(refreshWebview) forControlEvents:UIControlEventTouchUpInside];
+    [mainView addSubview:btnF5];
+    
     UIView *mainWebView = [[UIView alloc] initWithFrame:CGRectMake(0, 70, self.view.frame.size.width, self.view.frame.size.height - 40)];
     mainWebView.tag = 4;
     mainWebView.backgroundColor = [UIColor whiteColor];
@@ -151,15 +155,12 @@ NSError *error);
     webview1 = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 70)];
     webview1.tag = 5;
     webview1.delegate = self;
-    //webview.scrollView.scrollEnabled = NO;
     [mainWebView addSubview:webview1];
     
     webview2 = [[UIWebView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, self.view.frame.size.height - 70)];
     webview2.hidden = YES;
     webview2.tag = 6;
     webview2.delegate = self;
-    webview2.userInteractionEnabled = YES;
-    //webview2.scrollView.scrollEnabled = NO;
     [mainWebView addSubview:webview2];
     
     lbl_error = [[UILabel alloc] initWithFrame:CGRectMake(0, 0, labelView.frame.size.width-20 , 60)];
@@ -187,13 +188,14 @@ NSError *error);
 }
 -(void)dismissDialog{
     if (webview2.hidden) {
+        NSLog(@"dismissDialog");
         NSMutableDictionary *obj = [[MoMoPayment shareInstant] getPaymentInfo];
         [[MoMoPayment shareInstant] requestWebpaymentData:obj requestType:@"close"];
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"NoficationCenterTokenReceived" object:@"payment.momo.vn/callbacksdk?fromapp=momotransfer&phonenumber=&status=4&message=Huỷ yêu cầu thanh toán."];
-        [self removeMe];
+        [self sendNoficationCenterTokenReceivedWithUri:@"https://payment.momo.vn/callbacksdk?fromapp=momotransfer&phonenumber=&status=4&message=Huỷ yêu cầu thanh toán."];
     }
     else{
         //Reload web MoMo Payment
+        NSLog(@"dimissIBWebview");
         [self dimissIBWebview];
     }
     
@@ -206,13 +208,13 @@ NSError *error);
     activity.center = mainView.center;
     [activity startAnimating];
 }
-
+    
 -(void)removeMe{
     if ([self isKindOfClass:[MoMoDialogs class]]) {
         [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
-
+    
 -(void)showErrorMessage:(NSString*)message{
     if(!lbl_error){
         lbl_error = [[UILabel alloc] initWithFrame:CGRectMake(20, 50, SCREEN_WIDTH - 60, 60)];
@@ -224,7 +226,7 @@ NSError *error);
     lbl_error.text = message;
     lbl_error.font = [UIFont systemFontOfSize:18];
 }
-
+    
 - (void) hideActivityIndicator{
     if(activity){
         [activity stopAnimating];
@@ -232,21 +234,24 @@ NSError *error);
     }
     
 }
-
+    
 - (NSData*)dataUsingUTF8Encode:(NSDictionary*)dictionary
-{
-    NSError *error = nil;
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:&error];
-    NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    return [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-}
-
+    {
+        NSError *error = nil;
+        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:dictionary options:0 error:&error];
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        return [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+    }
+    
 -(void)refreshWebview{
+    if (webview1.hidden) {
+        [webview2 reload];
+    }
     [webview1 reload];
     [self pageLoading];
     
 }
-
+    
 -(void)pageLoading{
     [imgF5 setImage:[UIImage imageNamed:@"momo_ic_reload_press"]];
     [activity startAnimating];
@@ -258,7 +263,7 @@ NSError *error);
         [imgF5 setImage:[UIImage imageNamed:@""]];
     }
 }
-
+    
 - (NSString*) stringForCStr:(const char *) cstr{
     if(cstr){
         return [NSString stringWithCString: cstr encoding: NSUTF8StringEncoding];
@@ -300,14 +305,36 @@ NSError *error);
     }
     return params;
 }
-
+    
 #pragma mark - Open url
-
+    
 #define stringIndexOfString(fulltext, textcompare) ([fulltext rangeOfString: textcompare ].location != NSNotFound)
+
+- (void) getNewStyle:(NSString*)keys
+{
+    if (keys && keys.length) {
+        happyStyle = @"";
+        NSURLRequest *urlRequest = [NSURLRequest requestWithURL:[NSURL URLWithString:keys]];
+        NSOperationQueue *queue = [[NSOperationQueue alloc] init];
+        
+        [NSURLConnection sendAsynchronousRequest:urlRequest queue:queue completionHandler:^(NSURLResponse *response, NSData *data, NSError *error)
+        {
+            if ([data length] > 0 && error == nil){
+                happyStyle = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+                NSLog(@">>happyStyle %@",happyStyle);
+            }
+            else{
+                happyStyle = @"";
+            }
+            
+        }];
+    }
+    
+}
 
 ///update for Internetbanking
 -(void)loadInternetBanking:(NSString*)baseURI{
-    NSLog(@"loadInternetBanking %@", baseURI);
+    NSLog(@"redirect IB");
     NSArray *arr = [baseURI componentsSeparatedByString:@"?"];
     NSString *query = [arr objectAtIndex:1];
     
@@ -315,57 +342,60 @@ NSError *error);
     
     NSDictionary *params = [self getDictionaryFromComponents:components];
     if (params[@"bankUrl"] && params[@"bankScript"]) {
-        NSLog(@"Show Webview Mapbank,Hidden web payment");
-        
         [btnDimiss setBackgroundImage:[UIImage imageNamed:@"momo_back"] forState:UIControlStateNormal];
         
         webview1.hidden = YES;
-        
         webview2.hidden = NO;
         [webview2 stringByEvaluatingJavaScriptFromString:@"document.body.innerHTML = \"\";"];
         
         webview2.accessibilityValue = params[@"bankScript"];
+        
+        [self getNewStyle:params[@"bankScript"]];
+        
         NSURLRequest* request = [NSURLRequest requestWithURL: [NSURL URLWithString:params[@"bankUrl"]]
-                                                 cachePolicy: NSURLRequestReloadIgnoringLocalAndRemoteCacheData
+                                                 cachePolicy: NSURLRequestReloadRevalidatingCacheData
                                              timeoutInterval: 60];
         
         [webview2 loadRequest: request];
-        
-        //[self performSelector:@selector(invokeStyleSheet) withObject:nil afterDelay:3];
+
     }
 }
-
 -(void)invokeStyleSheet{
-    NSString *newStyle = [NSString stringWithFormat:@"var newScript = document.createElement('script');"
-                          "newScript.type = 'text/javascript';"
-                          "newScript.src = '%@';"
-                          "document.body.appendChild(newScript);",webview2.accessibilityValue];
-    NSLog(@">>newStyle %@",newStyle);
-    [webview2 stringByEvaluatingJavaScriptFromString:newStyle];
+    if (happyStyle && happyStyle.length) {
+        [webview2 stringByEvaluatingJavaScriptFromString:happyStyle];
+        
+    }
+    else{
+        NSData *data = [NSData dataWithContentsOfURL:[NSURL URLWithString:webview2.accessibilityValue]];
+        NSString *style = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+        [webview2 stringByEvaluatingJavaScriptFromString:style];
+    }
 }
-
+    
 -(void)showBackButton{
     btnDimiss.hidden = NO;
 }
-
+    
 -(void)dimissIBWebview{
     webview1.hidden = NO;
     webview2.hidden = YES;
     [btnDimiss setBackgroundImage:[UIImage imageNamed:@"momoclose"] forState:UIControlStateNormal];
     btnDimiss.hidden = YES;
-    [self performSelector:@selector(showBackButton) withObject:nil afterDelay:3];
+    [self performSelector:@selector(showBackButton) withObject:nil afterDelay:2];
     [self refreshWebview];
 }
-///end update Internetbanking
-
-
+    ///end update Internetbanking
+    
+    
 - (void)webViewDidStartLoad:(UIWebView *)webView {
 }
+
 - (void) webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error{
     [self pageLoadFinish];
 }
+
 - (BOOL) webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType{
-    NSLog(@">>load url %@",request.URL.absoluteString);
+    //NSLog(@">>load url %@",request.URL.absoluteString);
     
     ///update for IB
     if ([request.URL.absoluteString hasPrefix:@"itms-apps://"]){
@@ -388,32 +418,31 @@ NSError *error);
     }
     
     ///end update IB
-    
     lbl_url.text =[NSString stringWithFormat:@"%@://%@",request.URL.scheme,request.URL.host];
-    if (request.URL.port.intValue != 80) {
-        lbl_url.text =[NSString stringWithFormat:@"%@://%@:%i",request.URL.scheme,request.URL.host,request.URL.port.intValue];
-    }
+
     [self pageLoading];
     if (stringIndexOfString(request.URL.absoluteString,@"payment.momo.vn/callbacksdk") || [request.URL.absoluteString hasPrefix:@"https://payment.momo.vn/callbacksdk"]) {
-        [[NSNotificationCenter defaultCenter] postNotificationName:@"NoficationCenterTokenReceived" object:request.URL.absoluteString];
+         [self sendNoficationCenterTokenReceivedWithUri:request.URL.absoluteString];
     }
-
+    
     return YES;
 }
 -(void) webViewDidFinishLoad:(UIWebView *)webView{
-    [self pageLoadFinish];
+    
+    NSLog(@"webViewDidFinishLoad");
     if (webView.tag ==6 ) {
-        [self invokeStyleSheet];
+        [self performSelectorOnMainThread:@selector(invokeStyleSheet) withObject:nil waitUntilDone:YES];
     }
+    [self pageLoadFinish];
 }
-
-// ------------ ByPass ssl starts ----------
+    
+    // ------------ ByPass ssl starts ----------
 -(BOOL)connection:(NSURLConnection *)connection canAuthenticateAgainstProtectionSpace:
 (NSURLProtectionSpace *)protectionSpace {
     return [protectionSpace.authenticationMethod
             isEqualToString:NSURLAuthenticationMethodServerTrust];
 }
-
+    
 -(void)connection:(NSURLConnection *)connection didReceiveAuthenticationChallenge:
 (NSURLAuthenticationChallenge *)challenge {
     if (([challenge.protectionSpace.authenticationMethod
@@ -433,10 +462,10 @@ NSError *error);
     }
     [challenge.sender continueWithoutCredentialForAuthenticationChallenge:challenge];
 }
-// -------------------ByPass ssl ends
-
-
-
+    // -------------------ByPass ssl ends
+    
+    
+    
 -(void)NotificationCenterPresentMoMoWebDialog:(NSNotification*)notif{
     lbl_error.text = @"";
     if ([notif.object isKindOfClass:[NSDictionary class]]) {
@@ -444,11 +473,11 @@ NSError *error);
         if ([notif.object objectForKey:@"code"] && [[notif.object objectForKey:@"code"] intValue] ==0 ){
             NSString *url = [notif.object objectForKey:@"url"];
             if (url) {
-                
                 NSURLRequest* request = [NSURLRequest requestWithURL: [NSURL URLWithString:url]
                                                          cachePolicy: NSURLRequestReloadRevalidatingCacheData
-                                                     timeoutInterval: 60];//IgnoringLocalAndRemoteCacheData NSURLRequestReturnCacheDataElseLoad
+                                                     timeoutInterval: 60];
                 [webview1 loadRequest: request];
+
             }
             
         }
@@ -460,9 +489,9 @@ NSError *error);
                 lbl_error.text = [NSString stringWithFormat:@"%@",notif.object[@"message"]];
             }
             else{
-                lbl_error.text = @"Service is not available";
+                lbl_error.text = SERVICE_NOT_AVAILABLE;
             }
-            NSLog(@">>error %@",[notif.object objectForKey:@"message"]);
+            //NSLog(@">>error %@",[notif.object objectForKey:@"message"]);
             webview1.hidden = YES;
             lbl_error.hidden = NO;
             [self pageLoadFinish ];
@@ -471,10 +500,14 @@ NSError *error);
     }
     else{
         NSLog(@">>error %@",notif.object);
-        lbl_error.text = @"Service is not available";
+        lbl_error.text = SERVICE_NOT_AVAILABLE;
         webview1.hidden = YES;
         lbl_error.hidden = NO;
         [self pageLoadFinish ];
     }
+}
+-(void)sendNoficationCenterTokenReceivedWithUri:(NSString*)uri{
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"NotificationCenterPresentMoMoWebDialog" object:nil];
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"NoficationCenterTokenReceived" object:uri];
 }
 @end
