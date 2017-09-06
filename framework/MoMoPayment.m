@@ -306,7 +306,7 @@ static NSMutableDictionary *paymentInfo = nil;
     [urlrequest setValue:@"application/json;charset=utf-8" forHTTPHeaderField:@"Content-Type"];
     [urlrequest setHTTPBody:postData];
     [urlrequest setTimeoutInterval:30];
-    NSLog(@">>>SDK config %@",[MoMoConfig getSubmitUrl]);
+    //NSLog(@">>>SDK config %@",[MoMoConfig getSubmitUrl]);
     [NSURLConnection sendAsynchronousRequest:urlrequest queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse* response, NSData* data, NSError *error)
      {
          if ([requesttype isEqualToString:@"payment"]) {
