@@ -12,6 +12,7 @@
 
 - (IBAction)pushNoti:(id)sender;
 - (IBAction)cancelNoti:(id)sender;
+- (IBAction)backAction:(id)sender;
 
 @end
 

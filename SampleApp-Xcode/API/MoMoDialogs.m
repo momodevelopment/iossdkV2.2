@@ -58,8 +58,8 @@ NSError *error);
     if ([parentView isKindOfClass:[UIViewController class]]) {
         parentView = view;
     }
-    [self openWebView];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(NotificationCenterPresentMoMoWebDialog:) name:@"NotificationCenterPresentMoMoWebDialog" object:nil];
+    [self openWebView];
     return self;
 }
     
@@ -418,12 +418,14 @@ NSError *error);
     }
     
     ///end update IB
-    lbl_url.text =[NSString stringWithFormat:@"%@://%@",request.URL.scheme,request.URL.host];
+    
 
     [self pageLoading];
     if (stringIndexOfString(request.URL.absoluteString,@"payment.momo.vn/callbacksdk") || [request.URL.absoluteString hasPrefix:@"https://payment.momo.vn/callbacksdk"]) {
          [self sendNoficationCenterTokenReceivedWithUri:request.URL.absoluteString];
     }
+    
+    lbl_url.text =[NSString stringWithFormat:@"%@://%@",request.URL.scheme,request.URL.host];
     
     return YES;
 }
@@ -507,7 +509,7 @@ NSError *error);
     }
 }
 -(void)sendNoficationCenterTokenReceivedWithUri:(NSString*)uri{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"NotificationCenterPresentMoMoWebDialog" object:nil];
     [[NSNotificationCenter defaultCenter] postNotificationName:@"NoficationCenterTokenReceived" object:uri];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:@"NotificationCenterPresentMoMoWebDialog" object:nil];
 }
 @end

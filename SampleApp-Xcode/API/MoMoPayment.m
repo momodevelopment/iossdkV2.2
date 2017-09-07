@@ -294,9 +294,8 @@ static NSMutableDictionary *paymentInfo = nil;
     if ([requesttype isEqualToString:@"payment"]) {
         [dataPost setValue:requestId forKey:@"requestId"];
     }
-
+    [dataPost setValue:[MoMoConfig getMerchantcode]       forKey:MOMO_PAY_CLIENT_PARTNER_CODE_KEY];
     [dataPost setValue:requesttype forKey:@"requestType"];
-    //NSLog(@"::MoMoPay Log:: dataPost %@" , dataPost);
     NSData *postData = [self encodeDictionary:dataPost];
     
     NSMutableURLRequest *urlrequest=[[NSMutableURLRequest alloc]init];
@@ -359,6 +358,7 @@ static NSMutableDictionary *paymentInfo = nil;
         [paymentInfo setValue:[self getDeviceInfoString]   forKey:MOMO_PAY_CLIENT_OS_KEY];
         [paymentInfo setValue:[MoMoConfig getAppBundleId]        forKey:MOMO_PAY_CLIENT_APP_SOURCE_KEY];
         [paymentInfo setValue:MOMO_PAY_SDK_VERSION               forKey:MOMO_PAY_SDK_VERSION_KEY];
+        
         for (NSString *key in [paymentInfo allKeys]) {
             if ([paymentInfo objectForKey:key] != nil) {
                 inputParams = [inputParams stringByAppendingFormat:@"&%@=%@",key,[paymentInfo objectForKey:key]];
@@ -404,12 +404,12 @@ static NSMutableDictionary *paymentInfo = nil;
     return [MoMoConfig getMoMoAppScheme];
 }
 
--(void)initPaymentInformation:(NSMutableDictionary*)info submitUrl:(NSString*)submitUrl momoAppScheme:(NSString*)bundleId environment:(MOMO_ENVIRONTMENT)type_environment
+-(void)initPaymentInformation:(NSMutableDictionary*)info momoAppScheme:(NSString*)bundleId environment:(MOMO_ENVIRONTMENT)type_environment
 {
-    [MoMoConfig setMoMoAppScheme:bundleId];
-    [MoMoConfig setSubmitUrl:submitUrl];
-    paymentInfo = [[NSMutableDictionary alloc] initWithDictionary:info];
     [self setEnvironment:type_environment];
+    [MoMoConfig setMoMoAppScheme:bundleId];
+    [MoMoConfig setSubmitUrl: type_environment == MOMO_SDK_DEVELOPMENT ? MOMO_WEB_SDK_REQUEST_DEV : MOMO_WEB_SDK_REQUEST_PRODUCTION ];
+    paymentInfo = [[NSMutableDictionary alloc] initWithDictionary:info];
     
 }
 -(void)setEnvironment:(MOMO_ENVIRONTMENT)type_environtment{

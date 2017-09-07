@@ -8,9 +8,8 @@
 
 #import "ViewController.h"
 #import "MoMoPayment.h"
-
-//SDK v.2.2
 #import "MoMoDialogs.h"
+
 
 
 @interface ViewController ()
@@ -32,10 +31,13 @@
     // Do any additional setup after loading the view, typically from a nib.
     
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(NoficationCenterTokenReceived:) name:@"NoficationCenterTokenReceived" object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(NoficationCenterCreateOrderReceived:) name:@"NoficationCenterCreateOrderReceived" object:nil];
-    
-    //SDK v.2.2
+
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(NoficationCenterTokenStartRequest:) name:@"NoficationCenterTokenStartRequest" object:nil];
+    
+    [[MoMoPayment shareInstant] initializingAppBundleId:@"com.abcFoody.LuckyLuck"
+                                             merchantId:@"SCB01" //
+                                           merchantName:@"Test SDK"
+                                      merchantNameTitle:@"Nhà cung cấp" billTitle:@"Tài khoản"];
     ///
     [self buildLayout];
 }
@@ -128,13 +130,14 @@
     }
 }
 
-
--(void)NoficationCenterTokenReceived:(NSNotification*)notif
-{
+-(void)dismissSdkDialog{
     if (dialog) {
         [dialog dismissViewControllerAnimated:YES completion:nil];
     }
+}
 
+-(void)processMoMoNoficationCenterTokenReceived:(NSNotification*)notif{
+    
     //Token Replied
     NSLog(@"::MoMoPay Log::Received Token Replied::%@",notif.object);
     lblMessage.text = [NSString stringWithFormat:@"%@",notif.object];
@@ -190,8 +193,20 @@
         {
             NSLog(@"::MoMoPay Log: %@",message);
         }
+        //UIAlertController * alert = [UIAlertController alloc] initwith
     }
-    
+}
+
+-(void)NoficationCenterTokenReceived:(NSNotification*)notif
+{
+    if (dialog) {
+        [dialog dismissViewControllerAnimated:YES completion:^{
+            [self processMoMoNoficationCenterTokenReceived:notif];
+        }];
+    }
+    else{
+        [self processMoMoNoficationCenterTokenReceived:notif];
+    }
 }
 
 /*
@@ -269,34 +284,33 @@
     NSString *username = [NSString stringWithFormat:@"username_accountId@yahoo.com"];//Tai khoan dang login de thuc hien giao dich nay (khong bat buoc)
     
     //Buoc 1: Khoi tao Payment info, add button MoMoPay
-    NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
-    [dateFormatter setDateFormat:@"yyyyMMdd-hhmmssss"];
-    
-    NSString *extradata = @"{\"site_code\":\"008\",\"site_name\":\"CGV Cresent Mall\",\"screen_code\":0,\"screen_name\":\"Special\",\"movie_name\":\"Kẻ Trộm Mặt Trăng 3\",\"movie_format\":\"2D\",\"ticket\":{\"01\":{\"type\":\"std\",\"price\":110000,\"qty\":3}}}";
-    
+
     NSMutableDictionary *paymentinfo = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-                                        [NSString stringWithFormat:@"CGV19072017"],@"partnerCode",
-                                        @"mua vé xem phim cgv",@"description",
-                                        [NSNumber numberWithInt:59000],@"amount",
+                                        [NSNumber numberWithInt:10000],@"amount",
                                         [NSNumber numberWithInt:0],@"fee",
-                                        extradata,@"extra",
+                                        @"mua vé xem phim cgv",@"description",
+                                        @"{\"key1\":\"value1\",\"key2\":\"value2\"}",@"extra", //OPTIONAL
                                         @"vi",@"language",
                                         username,@"username",
-                                        @"4234234234234234",@"billid",
-                                        @"4234234234234234",@"transid",
+                                        @"Người dùng",@"usernamelabel",
                                         nil];
-    [[MoMoPayment shareInstant] setMoMoAppScheme:@"com.momo.appv2.ios"];//Development schema com.momo.appv2.ios , Production scheme com.mservice.com.vn.MoMoTransfer
-    [[MoMoPayment shareInstant] setSubmitURL:@"http://118.69.187.119:9090/sdk/api/v1/payment/request"];
-    [[MoMoPayment shareInstant] createPaymentInformation:paymentinfo];
+    [[MoMoPayment shareInstant] initPaymentInformation:paymentinfo momoAppScheme:@"com.mservice.com.vn.MoMoTransfer" environment:MOMO_SDK_PRODUCTION];
     
-    //Buoc 2: add button Thanh toan bang Vi MoMo vao khu vuc ban can hien thi (Vi du o day la vung paymentArea)
-    ///Default MoMo Button [[MoMoPayment shareInstant] addMoMoPayDefaultButtonToView:paymentArea];
+    /*
+     //Development environment
+     [[MoMoPayment shareInstant] initPaymentInformation:paymentinfo momoAppScheme:@"com.momo.appv2.ios" environment:MOMO_SDK_DEVELOPMENT];
+     */
+   
     
+    //BUOC 2: add button Thanh toan bang Vi MoMo vao khu vuc ban can hien thi (Vi du o day la vung paymentArea)
     ///Custom button
     [[MoMoPayment shareInstant] addMoMoPayCustomButton:btnPay forControlEvents:UIControlEventTouchUpInside toView:paymentArea];
     
     //Code của bạn
     [self.view addSubview:paymentArea];
     
+}
+- (IBAction)backAction:(id)sender {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 @end

@@ -20,10 +20,7 @@
     // Override point for customization after application launch.
     
     // Override point for customization after application launch.
-    [[MoMoPayment shareInstant] initializingAppBundleId:@"com.abcFoody.LuckyLuck"
-                           merchantId:@"CGV19072017"
-                           merchantName:@"CGV CCinemas"
-                           merchantNameTitle:@"Nhà cung cấp" billTitle:@"Mã thanh toán"];
+    
     
     return YES;
 }

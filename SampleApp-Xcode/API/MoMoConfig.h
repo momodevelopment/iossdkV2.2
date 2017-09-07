@@ -11,6 +11,7 @@
 
 #define APP_MERCHANT_BUNDLE_ID_KEY               @"APP_MERCHANT_BUNDLE_ID_KEY"
 #define MOMO_PAY_CLIENT_MERCHANT_CODE_KEY        @"merchantcode"
+#define MOMO_PAY_CLIENT_PARTNER_CODE_KEY        @"partnerCode"
 #define MOMO_PAY_CLIENT_MERCHANT_NAME_KEY        @"merchantname"
 #define MOMO_PAY_CLIENT_MERCHANT_NAME_LABEL_KEY  @"merchantnamelabel"
 #define MOMO_PAY_CLIENT_IP_ADDRESS_KEY           @"ipaddress"
@@ -54,6 +55,8 @@
 //Version 2.2 update
 #define MOMO_PAY_CLIENT_APP_SUBMIT_URL_WEB           @"momofeedurl"
 #define MOMO_APP_SCHEME_BUNDLE_ID_KEY               @"MOMO_APP_SCHEME_BUNDLE_ID_KEY"
+#define MOMO_WEB_SDK_REQUEST_DEV @"http://118.69.187.119:9090/sdk/api/v1/payment/request"
+#define MOMO_WEB_SDK_REQUEST_PRODUCTION @"https://payment.momo.vn:18088/sdk/api/v1/payment/request"
 extern NSString *CLIENT_MERCHANT_CODE;
 extern NSString *CLIENT_MERCHANT_NAME;
 extern NSString *CLIENT_MERCHANT_NAME_LABEL;
