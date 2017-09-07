@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		21818F161F558A3C00223B5B /* momo_lock_symbol.png in Resources */ = {isa = PBXBuildFile; fileRef = 21818F151F558A3C00223B5B /* momo_lock_symbol.png */; };
+		21936DCC1F42F0BC000AE759 /* momo_back.png in Resources */ = {isa = PBXBuildFile; fileRef = 21936DCB1F42F0BC000AE759 /* momo_back.png */; };
 		21F7989B1F333C95000F5B02 /* MoMoConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = 21F798901F333C95000F5B02 /* MoMoConfig.m */; };
 		21F7989C1F333C95000F5B02 /* MoMoDialogs.m in Sources */ = {isa = PBXBuildFile; fileRef = 21F798921F333C95000F5B02 /* MoMoDialogs.m */; };
 		21F7989D1F333C95000F5B02 /* MoMoPayment.m in Sources */ = {isa = PBXBuildFile; fileRef = 21F798941F333C95000F5B02 /* MoMoPayment.m */; };
-		21F7989E1F333C95000F5B02 /* MoMoPaySDK.m in Sources */ = {isa = PBXBuildFile; fileRef = 21F798961F333C95000F5B02 /* MoMoPaySDK.m */; };
 		21F798A81F333CCE000F5B02 /* momo_highlights.png in Resources */ = {isa = PBXBuildFile; fileRef = 21F798A11F333CCE000F5B02 /* momo_highlights.png */; };
 		21F798A91F333CCE000F5B02 /* momo_highlights@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 21F798A21F333CCE000F5B02 /* momo_highlights@2x.png */; };
 		21F798AA1F333CCE000F5B02 /* momo_ic_reload_press.png in Resources */ = {isa = PBXBuildFile; fileRef = 21F798A31F333CCE000F5B02 /* momo_ic_reload_press.png */; };
@@ -27,14 +28,14 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		21818F151F558A3C00223B5B /* momo_lock_symbol.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = momo_lock_symbol.png; sourceTree = "<group>"; };
+		21936DCB1F42F0BC000AE759 /* momo_back.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = momo_back.png; sourceTree = "<group>"; };
 		21F7988F1F333C95000F5B02 /* MoMoConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoMoConfig.h; sourceTree = "<group>"; };
 		21F798901F333C95000F5B02 /* MoMoConfig.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoMoConfig.m; sourceTree = "<group>"; };
 		21F798911F333C95000F5B02 /* MoMoDialogs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoMoDialogs.h; sourceTree = "<group>"; };
 		21F798921F333C95000F5B02 /* MoMoDialogs.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoMoDialogs.m; sourceTree = "<group>"; };
 		21F798931F333C95000F5B02 /* MoMoPayment.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoMoPayment.h; sourceTree = "<group>"; };
 		21F798941F333C95000F5B02 /* MoMoPayment.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoMoPayment.m; sourceTree = "<group>"; };
-		21F798951F333C95000F5B02 /* MoMoPaySDK.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoMoPaySDK.h; sourceTree = "<group>"; };
-		21F798961F333C95000F5B02 /* MoMoPaySDK.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoMoPaySDK.m; sourceTree = "<group>"; };
 		21F798A11F333CCE000F5B02 /* momo_highlights.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = momo_highlights.png; sourceTree = "<group>"; };
 		21F798A21F333CCE000F5B02 /* momo_highlights@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "momo_highlights@2x.png"; sourceTree = "<group>"; };
 		21F798A31F333CCE000F5B02 /* momo_ic_reload_press.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = momo_ic_reload_press.png; sourceTree = "<group>"; };
@@ -68,6 +69,8 @@
 		21F7988E1F333C95000F5B02 /* API */ = {
 			isa = PBXGroup;
 			children = (
+				21818F151F558A3C00223B5B /* momo_lock_symbol.png */,
+				21936DCB1F42F0BC000AE759 /* momo_back.png */,
 				21F798A11F333CCE000F5B02 /* momo_highlights.png */,
 				21F798A21F333CCE000F5B02 /* momo_highlights@2x.png */,
 				21F798A31F333CCE000F5B02 /* momo_ic_reload_press.png */,
@@ -81,8 +84,6 @@
 				21F798921F333C95000F5B02 /* MoMoDialogs.m */,
 				21F798931F333C95000F5B02 /* MoMoPayment.h */,
 				21F798941F333C95000F5B02 /* MoMoPayment.m */,
-				21F798951F333C95000F5B02 /* MoMoPaySDK.h */,
-				21F798961F333C95000F5B02 /* MoMoPaySDK.m */,
 			);
 			path = API;
 			sourceTree = "<group>";
@@ -192,11 +193,13 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				21818F161F558A3C00223B5B /* momo_lock_symbol.png in Resources */,
 				21F798A91F333CCE000F5B02 /* momo_highlights@2x.png in Resources */,
 				21F798A81F333CCE000F5B02 /* momo_highlights.png in Resources */,
 				21F798AE1F333CCE000F5B02 /* momoclose.png in Resources */,
 				21F798AA1F333CCE000F5B02 /* momo_ic_reload_press.png in Resources */,
 				21F798AC1F333CCE000F5B02 /* momo.png in Resources */,
+				21936DCC1F42F0BC000AE759 /* momo_back.png in Resources */,
 				87E975881BF3A12F004F5D01 /* LaunchScreen.storyboard in Resources */,
 				21F798AB1F333CCE000F5B02 /* momo_ic_reload.png in Resources */,
 				87E975851BF3A12F004F5D01 /* Assets.xcassets in Resources */,
@@ -214,7 +217,6 @@
 			files = (
 				87E975801BF3A12F004F5D01 /* ViewController.m in Sources */,
 				21F7989C1F333C95000F5B02 /* MoMoDialogs.m in Sources */,
-				21F7989E1F333C95000F5B02 /* MoMoPaySDK.m in Sources */,
 				87E9757D1BF3A12F004F5D01 /* AppDelegate.m in Sources */,
 				21F7989D1F333C95000F5B02 /* MoMoPayment.m in Sources */,
 				87E9757A1BF3A12F004F5D01 /* main.m in Sources */,
@@ -331,6 +333,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = HTKVRHE3RY;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				HEADER_SEARCH_PATHS = "";
@@ -351,6 +354,7 @@
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = HTKVRHE3RY;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = "";
 				HEADER_SEARCH_PATHS = "";

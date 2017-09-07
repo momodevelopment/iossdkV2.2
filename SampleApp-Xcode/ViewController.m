@@ -96,63 +96,22 @@
     return params;
 }
 
-
--(void)NoficationCenterCreateOrderReceived:(NSNotification*)notif
-{
-    //Payment Order Replied
-//    NSString *responseString = [[NSString alloc] initWithData:[notif.object dataUsingEncoding:NSUTF8StringEncoding] encoding:NSUTF8StringEncoding];
-//    
-    NSLog(@"::MoMoPay Log::Request Payment Replied::%@",notif.object);
-    lblMessage.text = [NSString stringWithFormat:@"Result: %@",notif.object];
-    if ([notif.object isKindOfClass:[NSDictionary class]]) {
-        NSDictionary *response = [[NSDictionary alloc] initWithDictionary:notif.object];
-        
-        int status = -1;
-        @try {
-            
-        }
-        @catch (NSException *exception) {
-            status= [[response objectForKey:@"status"] intValue];
-        }
-        @finally {
-            
-        }
-        
-        if (status==0) {
-            NSLog(@"::MoMoPay Log::Payment Success");
-        }
-        else
-        {
-            NSLog(@"::MoMoPay Log::Payment Error::%@",[response objectForKey:@"message"]);
-        }
-        lblMessage.text = [NSString stringWithFormat:@"%@:%@",[response objectForKey:@"status"],[response objectForKey:@"message"]];
-        //continue your checkout order here
-    }
-}
-
--(void)dismissSdkDialog{
-    if (dialog) {
-        [dialog dismissViewControllerAnimated:YES completion:nil];
-    }
-}
-
 -(void)processMoMoNoficationCenterTokenReceived:(NSNotification*)notif{
     
     //Token Replied
     NSLog(@"::MoMoPay Log::Received Token Replied::%@",notif.object);
     lblMessage.text = [NSString stringWithFormat:@"%@",notif.object];
     
-    NSString *sourceText = [notif.object stringByReplacingOccurrencesOfString:[NSString stringWithFormat:@"com.mservice.com.vn.MoMoTransfer://?"] withString:@""];
+    NSString *sourceText = [NSString stringWithFormat:@"%@",notif.object];
     
-    ///fix UT8 String
-    //sourceText = [sourceText stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-    ////end fix UTF8 string
+    NSURL *url = [NSURL URLWithString:sourceText];
+    if (url) {
+        sourceText = url.query;
+    }
     
-    //NSLog(@">>Parram %@",sourceText);
+    NSArray *parameters = [sourceText componentsSeparatedByString:@"&"];
     
-    NSArray *components = [sourceText componentsSeparatedByString:@"&"];
-    
-    NSDictionary *response = [self getDictionaryFromComponents:components];//(NSDictionary*)notif.object;
+    NSDictionary *response = [self getDictionaryFromComponents:parameters];
     NSString *status = [NSString stringWithFormat:@"%@",[response objectForKey:@"status"]];
     NSString *message = [NSString stringWithFormat:@"%@",[response objectForKey:@"message"]];
     if ([status isEqualToString:@"0"]) {
@@ -160,7 +119,7 @@
         NSLog(@"::MoMoPay Log: SUCESS TOKEN.");
         NSLog(@">>response::%@",notif.object);
         
-        NSString *data = [NSString stringWithFormat:@"%@",[response objectForKey:@"data"]];
+        NSString *sessiondata = [NSString stringWithFormat:@"%@",[response objectForKey:@"data"]];
         NSString *phoneNumber =  [NSString stringWithFormat:@"%@",[response objectForKey:@"phonenumber"]];
         
         NSString *env = @"app";
@@ -168,15 +127,16 @@
             env =  [NSString stringWithFormat:@"%@",[response objectForKey:@"env"]];
         }
         
-        if (response[@"extra"] && [sourceText hasPrefix:@"https://payment.momo.vn/callbacksdk"]) {
+        if (response[@"extra"]) {
             //Decode base 64 for using
-            NSData *decodedData = [[NSData alloc] initWithBase64EncodedString:response[@"extra"] options:0];
-            NSString *extra = [[[NSString alloc] initWithData:decodedData encoding:NSUTF8StringEncoding] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+            
         }
         
         lblMessage.text = [NSString stringWithFormat:@">>response:: SUCESS TOKEN. \n %@",notif.object];
         
-        /*  SEND THESE PARRAM TO SERVER:  phoneNumber, data, env   */
+        /*  SEND THESE PARRAM TO SERVER:  phoneNumber, sessiondata, env
+         CALL API MOMO PAYMENT
+         */
         
     }else
     {
@@ -193,7 +153,6 @@
         {
             NSLog(@"::MoMoPay Log: %@",message);
         }
-        //UIAlertController * alert = [UIAlertController alloc] initwith
     }
 }
 
@@ -294,13 +253,13 @@
                                         username,@"username",
                                         @"Người dùng",@"usernamelabel",
                                         nil];
-    [[MoMoPayment shareInstant] initPaymentInformation:paymentinfo momoAppScheme:@"com.mservice.com.vn.MoMoTransfer" environment:MOMO_SDK_PRODUCTION];
     
-    /*
-     //Development environment
-     [[MoMoPayment shareInstant] initPaymentInformation:paymentinfo momoAppScheme:@"com.momo.appv2.ios" environment:MOMO_SDK_DEVELOPMENT];
-     */
-   
+    
+    
+     //Development environment (only testing)
+     //[[MoMoPayment shareInstant] initPaymentInformation:paymentinfo momoAppScheme:@"com.momo.appv2.ios" environment:MOMO_SDK_DEVELOPMENT];
+    
+    [[MoMoPayment shareInstant] initPaymentInformation:paymentinfo momoAppScheme:@"com.mservice.com.vn.MoMoTransfer" environment:MOMO_SDK_PRODUCTION];
     
     //BUOC 2: add button Thanh toan bang Vi MoMo vao khu vuc ban can hien thi (Vi du o day la vung paymentArea)
     ///Custom button

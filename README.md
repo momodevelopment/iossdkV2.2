@@ -62,7 +62,62 @@ NSNotificationCenter registration
     [self updateLayout];
 }
 -(void)processMoMoNoficationCenterTokenReceived:(NSNotification*)notif{
+  //Token Replied
+  NSLog(@"::MoMoPay Log::Received Token Replied::%@",notif.object);
+  lblMessage.text = [NSString stringWithFormat:@"%@",notif.object];
 
+  NSString *sourceText = [NSString stringWithFormat:@"%@",notif.object];
+
+  NSURL *url = [NSURL URLWithString:sourceText];
+  if (url) {
+      sourceText = url.query;
+  }
+
+  NSArray *parameters = [sourceText componentsSeparatedByString:@"&"];
+
+  NSDictionary *response = [self getDictionaryFromComponents:parameters];
+  NSString *status = [NSString stringWithFormat:@"%@",[response objectForKey:@"status"]];
+  NSString *message = [NSString stringWithFormat:@"%@",[response objectForKey:@"message"]];
+  if ([status isEqualToString:@"0"]) {
+
+      NSLog(@"::MoMoPay Log: SUCESS TOKEN.");
+      NSLog(@">>response::%@",notif.object);
+
+      NSString *sessiondata = [NSString stringWithFormat:@"%@",[response objectForKey:@"data"]];
+      NSString *phoneNumber =  [NSString stringWithFormat:@"%@",[response objectForKey:@"phonenumber"]];
+
+      NSString *env = @"app";
+      if (response[@"env"]) {
+          env =  [NSString stringWithFormat:@"%@",[response objectForKey:@"env"]];
+      }
+
+      if (response[@"extra"]) {
+          //Decode base 64 for using
+
+      }
+
+      lblMessage.text = [NSString stringWithFormat:@">>response:: SUCESS TOKEN. \n %@",notif.object];
+
+      /*  SEND THESE PARRAM TO SERVER:  phoneNumber, sessiondata, env
+       CALL API MOMO PAYMENT
+       */
+
+  }else
+  {
+      if ([status isEqualToString:@"1"]) {
+          NSLog(@"::MoMoPay Log: REGISTER_PHONE_NUMBER_REQUIRE.");
+      }
+      else if ([status isEqualToString:@"2"]) {
+          NSLog(@"::MoMoPay Log: LOGIN_REQUIRE.");
+      }
+      else if ([status isEqualToString:@"3"]) {
+          NSLog(@"::MoMoPay Log: NO_WALLET. You need to cashin to MoMo Wallet ");
+      }
+      else
+      {
+          NSLog(@"::MoMoPay Log: %@",message);
+      }
+  }
 }
 -(void)NoficationCenterTokenStartRequest:(NSNotification*)notif
 {
