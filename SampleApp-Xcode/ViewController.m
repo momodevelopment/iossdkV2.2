@@ -30,16 +30,16 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view, typically from a nib.
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(NoficationCenterTokenReceived:) name:@"NoficationCenterTokenReceived" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(NoficationCenterTokenReceived:) name:@"NoficationCenterTokenReceived" object:nil]; //SHOULD BE REMOVE THIS KEY WHEN VIEWCONTROLLER DEALLOCATING OR DISMISSING COMPLETED
 
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(NoficationCenterTokenStartRequest:) name:@"NoficationCenterTokenStartRequest" object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(NoficationCenterTokenStartRequest:) name:@"NoficationCenterTokenStartRequest" object:nil]; ///SHOULD BE REMOVE THIS KEY WHEN VIEWCONTROLLER DEALLOCATING OR DISMISSING COMPLETED
     
     [[MoMoPayment shareInstant] initializingAppBundleId:@"com.abcFoody.LuckyLuck"
                                              merchantId:@"SCB01" //
                                            merchantName:@"Test SDK"
                                       merchantNameTitle:@"Nhà cung cấp" billTitle:@"Tài khoản"];
     ///
-    [self buildLayout];
+    [self initOrderAndButtonAction];
 }
 
 -(void)viewWillAppear:(BOOL)animated
@@ -119,8 +119,8 @@
         NSLog(@"::MoMoPay Log: SUCESS TOKEN.");
         NSLog(@">>response::%@",notif.object);
         
-        NSString *sessiondata = [NSString stringWithFormat:@"%@",[response objectForKey:@"data"]];
-        NSString *phoneNumber =  [NSString stringWithFormat:@"%@",[response objectForKey:@"phonenumber"]];
+        NSString *data = [NSString stringWithFormat:@"%@",[response objectForKey:@"data"]];//session data
+        NSString *phoneNumber =  [NSString stringWithFormat:@"%@",[response objectForKey:@"phonenumber"]];//wallet Id
         
         NSString *env = @"app";
         if (response[@"env"]) {
@@ -134,7 +134,7 @@
         
         lblMessage.text = [NSString stringWithFormat:@">>response:: SUCESS TOKEN. \n %@",notif.object];
         
-        /*  SEND THESE PARRAM TO SERVER:  phoneNumber, sessiondata, env
+        /*  SEND THESE PARRAM TO SERVER:  phoneNumber, data, env
          CALL API MOMO PAYMENT
          */
         
@@ -179,7 +179,7 @@
         [self presentViewController:dialog animated:YES completion:nil];
     }
 }
--(void)buildLayout{
+-(void)initOrderAndButtonAction{
     //Code của bạn
     UIView *paymentArea = [[UIView alloc] initWithFrame:CGRectMake(20, 100, 300, 300)];
     [paymentArea setBackgroundColor:[UIColor whiteColor]];
@@ -239,18 +239,16 @@
     [paymentArea addSubview:lblMessage];
     
     //Tạo button Thanh toán bằng Ví MoMo
-    
-    NSString *username = [NSString stringWithFormat:@"username_accountId@yahoo.com"];//Tai khoan dang login de thuc hien giao dich nay (khong bat buoc)
-    
+
     //Buoc 1: Khoi tao Payment info, add button MoMoPay
 
     NSMutableDictionary *paymentinfo = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-                                        [NSNumber numberWithInt:10000],@"amount",
+                                        [NSNumber numberWithInt:99000],@"amount",
                                         [NSNumber numberWithInt:0],@"fee",
                                         @"mua vé xem phim cgv",@"description",
                                         @"{\"key1\":\"value1\",\"key2\":\"value2\"}",@"extra", //OPTIONAL
                                         @"vi",@"language",
-                                        username,@"username",
+                                        @"username_accountId@yahoo.com",@"username",
                                         @"Người dùng",@"usernamelabel",
                                         nil];
     

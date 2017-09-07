@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "SampleApp-Xcode/ViewController.m"
-            timestampString = "526481560.158168"
+            timestampString = "526482908.905285"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "202"
-            endingLineNumber = "202"
+            startingLineNumber = "168"
+            endingLineNumber = "168"
             landmarkName = "-NoficationCenterTokenReceived:"
             landmarkType = "7">
          </BreakpointContent>

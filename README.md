@@ -49,8 +49,9 @@ Step 3. Update Layout Payment
 #import "MoMoDialogs.h"
 ```
 
-NSNotificationCenter registration
-
+#NotificationCenter registration
+MOMO NOTIFICATION KEYS SHOULD BE REMOVED WHEN THE VIEWCONTROLLERS DEALLOCATING OR DISMISSING COMPLETED
+(Notification keys: NoficationCenterTokenReceived , NoficationCenterTokenStartRequest)
 ```
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -59,8 +60,11 @@ NSNotificationCenter registration
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(NoficationCenterTokenReceived:) name:@"NoficationCenterTokenReceived" object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(NoficationCenterTokenStartRequest:) name:@"NoficationCenterTokenStartRequest" object:nil];
     ///
-    [self updateLayout];
+    [self initOrderAndButtonAction];
 }
+```
+#Handle MoMoNotificationReceive
+```
 -(void)processMoMoNoficationCenterTokenReceived:(NSNotification*)notif{
   //Token Replied
   NSLog(@"::MoMoPay Log::Received Token Replied::%@",notif.object);
@@ -83,8 +87,8 @@ NSNotificationCenter registration
       NSLog(@"::MoMoPay Log: SUCESS TOKEN.");
       NSLog(@">>response::%@",notif.object);
 
-      NSString *sessiondata = [NSString stringWithFormat:@"%@",[response objectForKey:@"data"]];
-      NSString *phoneNumber =  [NSString stringWithFormat:@"%@",[response objectForKey:@"phonenumber"]];
+      NSString *sessiondata = [NSString stringWithFormat:@"%@",[response objectForKey:@"data"]];       //session data
+      NSString *phoneNumber =  [NSString stringWithFormat:@"%@",[response objectForKey:@"phonenumber"]]; //wallet Id
 
       NSString *env = @"app";
       if (response[@"env"]) {
@@ -92,15 +96,13 @@ NSNotificationCenter registration
       }
 
       if (response[@"extra"]) {
-          //Decode base 64 for using
-
+          //This a extra value which you put at initOrderAndButtonAction. Decode base 64 for using if need (Optional)
       }
-
-      lblMessage.text = [NSString stringWithFormat:@">>response:: SUCESS TOKEN. \n %@",notif.object];
 
       /*  SEND THESE PARRAM TO SERVER:  phoneNumber, sessiondata, env
        CALL API MOMO PAYMENT
        */
+       lblMessage.text = [NSString stringWithFormat:@">>response:: SUCESS TOKEN. \n %@",notif.object];
 
   }else
   {
@@ -130,10 +132,10 @@ NSNotificationCenter registration
 Add Button Action to Pay Via MOMO
 Button title: EN = MoMo Wallet , VI = Ví MoMo
 ```
--(void)updateLayout{
+-(void)initOrderAndButtonAction{
     //STEP 1: INIT ORDER INFO
     NSMutableDictionary *paymentinfo = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-                                            [NSNumber numberWithInt:10000],@"amount",
+                                            [NSNumber numberWithInt:99000],@"amount",
                                             [NSNumber numberWithInt:0],@"fee",
                                             @"Buy CGV Cinemas",@"description",
                                             @"{\"key1\":\"value1\",\"key2\":\"value2\"}",@"extra", //OPTIONAL
@@ -144,7 +146,8 @@ Button title: EN = MoMo Wallet , VI = Ví MoMo
     [[MoMoPayment shareInstant] initPaymentInformation:paymentinfo momoAppScheme:@"com.mservice.com.vn.MoMoTransfer" environment:MOMO_SDK_PRODUCTION];
 
     //STEP 2: ADD BUTTON ACTION TO PAY VIA MOMO WALLET
-    [[MoMoPayment shareInstant] addMoMoPayCustomButton:buttonMoMo forControlEvents:UIControlEventTouchUpInside toView:yourPaymentView];
+    //buttonAction will open MoMo app to pay
+    [[MoMoPayment shareInstant] addMoMoPayCustomButton:buttonAction forControlEvents:UIControlEventTouchUpInside toView:yourPaymentView];
 
 }
 ```
