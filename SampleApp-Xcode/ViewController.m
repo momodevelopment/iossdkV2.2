@@ -35,9 +35,9 @@
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(NoficationCenterTokenStartRequest:) name:@"NoficationCenterTokenStartRequest" object:nil]; ///SHOULD BE REMOVE THIS KEY WHEN VIEWCONTROLLER DEALLOCATING OR DISMISSING COMPLETED
     
     [[MoMoPayment shareInstant] initializingAppBundleId:@"com.abcFoody.LuckyLuck"
-                                             merchantId:@"SCB01" //
-                                           merchantName:@"Test SDK"
-                                      merchantNameTitle:@"Nhà cung cấp" billTitle:@"Tài khoản"];
+                                             merchantId:@"CGV01" //
+                                           merchantName:@"CGV01"
+                                      merchantNameTitle:@"Nhà cung cấp" billTitle:@"Nguoi dung"];
     ///
     [self initOrderAndButtonAction];
 }
@@ -246,16 +246,15 @@
                                         [NSNumber numberWithInt:99000],@"amount",
                                         [NSNumber numberWithInt:0],@"fee",
                                         @"mua vé xem phim cgv",@"description",
-                                        @"{\"key1\":\"value1\",\"key2\":\"value2\"}",@"extra", //OPTIONAL
+                                        @"{\"key1\":\"value1\",\"key2\":\"value2\"}",@"extra", 
                                         @"vi",@"language",
                                         @"username_accountId@yahoo.com",@"username",
-                                        @"Người dùng",@"usernamelabel",
                                         nil];
     
     
     
      //Development environment (only testing)
-     //[[MoMoPayment shareInstant] initPaymentInformation:paymentinfo momoAppScheme:@"com.momo.appv2.ios" environment:MOMO_SDK_DEVELOPMENT];
+     //[[MoMoPayment shareInstant] initPaymentInformation:paymentinfo momoAppScheme:@"com.momo.appv2.ios" environment:MOMO_SDK_PRODUCTION];
     
     [[MoMoPayment shareInstant] initPaymentInformation:paymentinfo momoAppScheme:@"com.mservice.com.vn.MoMoTransfer" environment:MOMO_SDK_PRODUCTION];
     
