@@ -309,26 +309,36 @@ static NSMutableDictionary *paymentInfo = nil;
     [NSURLConnection sendAsynchronousRequest:urlrequest queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse* response, NSData* data, NSError *error)
      {
          if ([requesttype isEqualToString:@"payment"]) {
-             
+             BOOL isRegAvailable = YES;
              if (!error) {
                  id json = [NSJSONSerialization JSONObjectWithData:data options:0 error:nil];
                  //NSLog(@"json  %@",json);
                  
                  if ([json isKindOfClass:[NSDictionary class]]) {
-                     if ([json[@"code"] intValue] == 9696) {
-                         NSURL *appStoreURL = [NSURL URLWithString:[NSString stringWithFormat:MOMO_APP_ITUNES_DOWNLOAD_PATH]];
-                         if ([[UIApplication sharedApplication] canOpenURL:appStoreURL]) {
-                             [[UIApplication sharedApplication] openURL:appStoreURL];
-                         }
+                     if ([json[@"code"] intValue] == 9696 || (json[@"code"] && [json[@"code"] intValue] != 0)) {
+                         isRegAvailable = NO;
                      }
+                 }
+                 else {
+                     isRegAvailable = NO;
                  }
                  
                  [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationCenterPresentMoMoWebDialog" object:json];
              }
              else
              {
+                 isRegAvailable = NO;
                  NSLog(@">>>error %@",error.description);
                  [[NSNotificationCenter defaultCenter] postNotificationName:@"NotificationCenterPresentMoMoWebDialog" object:nil];
+             }
+             
+             if (!isRegAvailable){
+                 NSLog(@">>>Goto Apple Store");
+                 NSURL *appStoreURL = [NSURL URLWithString:[NSString stringWithFormat:MOMO_APP_ITUNES_DOWNLOAD_PATH]];
+                 if ([[UIApplication sharedApplication] canOpenURL:appStoreURL]) {
+                     
+                     [[UIApplication sharedApplication] openURL:appStoreURL];
+                 }
              }
          }
          else{
