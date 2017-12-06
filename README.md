@@ -1,4 +1,4 @@
-# MoMo iOS SDK Version 2.2
+# MoMo iOS SDK Version 2.2 (PORTABLE VERSION)
 
 At a minimum, MoMo SDK is designed to work with iOS 8.0 or newest.
 
